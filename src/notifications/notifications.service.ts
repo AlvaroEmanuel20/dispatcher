@@ -1,0 +1,21 @@
+import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable, Logger } from '@nestjs/common';
+import { Job, Queue } from 'bullmq';
+import { PrismaService } from 'src/infrastructure/database/prisma.service';
+import { EmailProvider } from 'src/infrastructure/email/email.provider';
+import QUEUES from 'src/infrastructure/queue/queues';
+import { EmailNotificationJobData } from './notifications.types';
+
+@Injectable()
+export class NotificationsService {
+  private readonly logger = new Logger(NotificationsService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailProvider: EmailProvider,
+    @InjectQueue(QUEUES.EMAIL)
+    private readonly emailQueue: Queue<EmailNotificationJobData>,
+  ) {}
+
+  async sendEmailNotificationFromJob(job: Job<EmailNotificationJobData>) {}
+}

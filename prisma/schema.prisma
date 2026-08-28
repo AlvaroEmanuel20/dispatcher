@@ -1,0 +1,97 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AdminRole {
+  ADMIN
+  OPERATOR
+}
+
+enum NotificationChannel {
+  EMAIL    @map("email")
+  PUSH     @map("push")
+  WHATSAPP @map("whatsapp")
+}
+
+enum NotificationStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+  CANCELED
+}
+
+enum NotificationTemplate {
+  WELCOME            @map("welcome")
+  EMAIL_VERIFICATION @map("email_verification")
+  PASSWORD_RESET     @map("password_reset")
+}
+
+model AdminUser {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      AdminRole
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model Application {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  apiKeys       ApiKey[]
+  notifications Notification[]
+
+  @@index([isActive])
+}
+
+model ApiKey {
+  id            String    @id @default(uuid())
+  applicationId String
+  name          String
+  keyHash       String    @unique
+  keyPrefix     String
+  lastUsedAt    DateTime?
+  revokedAt     DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+
+  @@index([applicationId])
+  @@index([keyPrefix])
+}
+
+model Notification {
+  id             String               @id @default(uuid())
+  applicationId  String
+  recipient      String
+  channel        NotificationChannel
+  template       NotificationTemplate
+  variables      Json
+  status         NotificationStatus   @default(PENDING)
+  idempotencyKey String?
+  attempts       Int                  @default(0)
+  processedAt    DateTime?
+  lastError      String?
+  createdAt      DateTime             @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+
+  @@unique([applicationId, idempotencyKey])
+  @@index([applicationId])
+  @@index([status])
+  @@index([createdAt])
+}
