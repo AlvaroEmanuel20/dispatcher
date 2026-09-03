@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from 'generated/prisma/client';
+import argon2 from 'argon2';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
@@ -16,12 +17,16 @@ async function main() {
     throw new Error('Admin email and password must be defined');
   }
 
+  const passwordHash = await argon2.hash(password, {
+    type: argon2.argon2id,
+  });
+
   const admin = await prisma.adminUser.upsert({
     where: { email },
     update: {},
     create: {
       email,
-      password: '',
+      password: passwordHash,
       role: 'ADMIN',
     },
   });

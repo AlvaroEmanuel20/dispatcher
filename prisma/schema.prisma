@@ -62,11 +62,12 @@ model ApiKey {
   applicationId String
   name          String
   keyHash       String    @unique
-  keyPrefix     String
+  keyPrefix     String    @unique
   lastUsedAt    DateTime?
   revokedAt     DateTime?
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Restrict)
 
