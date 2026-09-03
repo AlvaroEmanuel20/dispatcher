@@ -10,6 +10,8 @@ import { getBullBoardConfig } from './infrastructure/config/bull-board.config';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ApiKeyModule } from './api-key/api-key.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { AdminUserModule } from './admin/user/admin-user.module';
+import { AdminAuthModule } from './admin/auth/admin-auth.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { ApplicationsModule } from './applications/applications.module';
     NotificationsModule,
     ApiKeyModule,
     ApplicationsModule,
+    AdminUserModule,
+    AdminAuthModule,
   ],
   providers: [
     {
