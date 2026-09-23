@@ -8,15 +8,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiKeyService } from './api-key.service';
-import { AdminAuthGuard } from 'src/common/admin-auth.guard';
-import { AdminRoles } from 'src/common/admin-roles.decorator';
-import { AdminRolesGuard } from 'src/common/admin-roles.guard';
+import { AdminAuthGuard } from '../common/admin-auth.guard';
+import { AdminRoles } from '../common/admin-roles.decorator';
+import { AdminRolesGuard } from '../common/admin-roles.guard';
 import {
   ApiKeyApplicationIdDto,
   ApiKeyIdApplicationIdDto,
   CreateApiKeyDto,
   UpdateApiKeyDto,
 } from './api-key.dto';
+import { seconds, Throttle } from '@nestjs/throttler';
 
 @Controller('applications/:applicationId/api-key')
 export class ApiKeyController {
@@ -40,6 +41,7 @@ export class ApiKeyController {
     return await this.apiKeyService.getApiKeyById(applicationId, apiKeyId);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Post()
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')
@@ -51,6 +53,7 @@ export class ApiKeyController {
     return await this.apiKeyService.createApiKey(applicationId, data);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Patch(':apiKeyId')
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')
@@ -62,6 +65,7 @@ export class ApiKeyController {
     return await this.apiKeyService.updateApiKey(applicationId, apiKeyId, data);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Patch(':apiKeyId/revoke')
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')

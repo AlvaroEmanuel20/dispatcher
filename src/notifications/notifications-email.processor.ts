@@ -1,6 +1,6 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import QUEUES from 'src/infrastructure/queue/queues';
+import QUEUES from '../infrastructure/queue/queues';
 import { NotificationsService } from './notifications.service';
 import { EmailNotificationJobData } from './notifications.types';
 

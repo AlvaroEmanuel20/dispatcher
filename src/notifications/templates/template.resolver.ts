@@ -1,3 +1,4 @@
+import { NotificationTemplate } from '../../generated/prisma/enums';
 import {
   EmailVerificationVariables,
   getEmailVerificationTemplate,

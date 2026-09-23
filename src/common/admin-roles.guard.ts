@@ -1,8 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AdminRole } from 'generated/prisma/enums';
+import { AdminRole } from '../generated/prisma/enums';
 import { ROLES_KEY } from './admin-roles.decorator';
-import { AuthenticatedAdminRequest } from 'src/admin/auth/admin-auth.types';
+import { AuthenticatedAdminRequest } from '../admin/auth/admin-auth.types';
 
 @Injectable()
 export class AdminRolesGuard implements CanActivate {

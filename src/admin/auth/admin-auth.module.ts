@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { AdminUserModule } from 'src/admin/user/admin-user.module';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { AdminUserModule } from '../../admin/user/admin-user.module';
+import { DatabaseModule } from '../../infrastructure/database/database.module';
 import type { StringValue } from 'ms';
 
 @Module({

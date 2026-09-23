@@ -1,4 +1,3 @@
-import { TemplateReturn } from '../communications.types';
 import {
   Body,
   Button,
@@ -11,6 +10,7 @@ import {
   Text,
   toPlainText,
 } from 'react-email';
+import { TemplateReturn } from './template.resolver';
 
 export type EmailVerificationVariables = {
   name: string;

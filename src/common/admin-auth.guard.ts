@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { JwtAdminPayload } from 'src/admin/auth/admin-auth.types';
-import { AdminUserService } from 'src/admin/user/admin-user.service';
+import { JwtAdminPayload } from '../admin/auth/admin-auth.types';
+import { AdminUserService } from '../admin/user/admin-user.service';
 
 @Injectable()
 export class AdminAuthGuard implements CanActivate {

@@ -8,15 +8,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AdminAuthGuard } from 'src/common/admin-auth.guard';
-import { AdminRoles } from 'src/common/admin-roles.decorator';
-import { AdminRolesGuard } from 'src/common/admin-roles.guard';
+import { AdminAuthGuard } from '../common/admin-auth.guard';
+import { AdminRoles } from '../common/admin-roles.decorator';
+import { AdminRolesGuard } from '../common/admin-roles.guard';
 import { ApplicationsService } from './applications.service';
 import {
   ApplicationIdDto,
   CreateApplicationDto,
   UpdateApplicationDto,
 } from './applications.dto';
+import { Throttle, seconds } from '@nestjs/throttler';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -38,6 +39,7 @@ export class ApplicationsController {
     return await this.applicationsService.getApplicationById(id);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Post()
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')
@@ -46,6 +48,7 @@ export class ApplicationsController {
     return await this.applicationsService.createApplication(data);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Patch(':id')
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')
@@ -57,6 +60,7 @@ export class ApplicationsController {
     return await this.applicationsService.updateApplication(id, data);
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Patch('inactivate/:id')
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')
@@ -68,6 +72,7 @@ export class ApplicationsController {
     });
   }
 
+  @Throttle({ default: { limit: 10, ttl: seconds(60) } })
   @Patch('activate/:id')
   @UseGuards(AdminAuthGuard)
   @AdminRoles('ADMIN')

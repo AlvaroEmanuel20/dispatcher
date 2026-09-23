@@ -9,7 +9,7 @@ import { Transform } from 'class-transformer';
 import {
   NotificationChannel,
   NotificationTemplate,
-} from 'generated/prisma/enums';
+} from '../generated/prisma/enums';
 
 export class NewNotificationDto {
   @IsNotEmpty()
