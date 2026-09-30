@@ -33,6 +33,8 @@ async function bootstrap() {
     }),
   );
 
+  app.set('trust proxy', 1);
+
   await app.listen(process.env.PORT ?? 8000);
 }
 bootstrap();
