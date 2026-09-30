@@ -8,3 +8,5 @@ Ponto de parada: Criar service integrando com serviço de enviar email
 ## Depois
 
 - Criar processor e controller
+- Adicionar o guarda de Application ao controller
+- Adicionar rate limit
