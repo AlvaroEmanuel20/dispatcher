@@ -7,6 +7,7 @@ import {
   getPasswordResetTemplate,
   PasswordResetVariables,
 } from './password-reset.template';
+import { getWelcomeTemplate, WelcomeVariables } from './welcome.template';
 
 export type TemplateReturn = {
   subject: string;
@@ -15,6 +16,7 @@ export type TemplateReturn = {
 };
 
 export interface NotificationTemplateVariables {
+  [NotificationTemplate.WELCOME]: WelcomeVariables;
   [NotificationTemplate.EMAIL_VERIFICATION]: EmailVerificationVariables;
   [NotificationTemplate.PASSWORD_RESET]: PasswordResetVariables;
 }
@@ -26,6 +28,7 @@ type TemplateResolverMap = {
 };
 
 const templateRegistry: TemplateResolverMap = {
+  [NotificationTemplate.WELCOME]: getWelcomeTemplate,
   [NotificationTemplate.EMAIL_VERIFICATION]: getEmailVerificationTemplate,
   [NotificationTemplate.PASSWORD_RESET]: getPasswordResetTemplate,
 };

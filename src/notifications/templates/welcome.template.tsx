@@ -1,0 +1,60 @@
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Html,
+  Preview,
+  render,
+  Section,
+  Text,
+  toPlainText,
+} from 'react-email';
+import { TemplateReturn } from './template.resolver';
+
+export type WelcomeVariables = {
+  name: string;
+  url: string;
+};
+
+export async function getWelcomeTemplate(
+  variables: WelcomeVariables,
+): Promise<TemplateReturn> {
+  const html = await render(<WelcomeTemplate {...variables} />);
+
+  return {
+    subject: 'Boas-vindas à Jusmetrica',
+    html,
+    text: toPlainText(html),
+  };
+}
+
+function WelcomeTemplate({ name, url }: WelcomeVariables) {
+  return (
+    <Html lang="pt-BR">
+      <Head />
+
+      <Preview>Boas-vindas à Jusmetrica</Preview>
+
+      <Body>
+        <Container>
+          <Section>
+            <Text>Olá, {name}!</Text>
+
+            <Text>
+              Que bom ter você com a gente. Sua conta está pronta para começar.
+            </Text>
+
+            <Text>Acesse a Jusmetrica pelo link abaixo:</Text>
+
+            <Button href={url}>Acessar minha conta</Button>
+
+            <Text>Esperamos que sua experiência seja ótima.</Text>
+
+            <Text>Atenciosamente, Equipe Jusmetrica</Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
