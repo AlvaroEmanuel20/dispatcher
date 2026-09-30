@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-O Dispatcher é uma API interna para centralizar o envio de notificações entre sistemas da organização. Em vez de cada aplicação implementar sua própria lógica de e-mail, autenticação e rastreio, o Dispatcher atua como um serviço único de despacho de mensagens, recebendo requisições de múltiplos sistemas e processando-as de forma assíncrona.
+O Dispatcher é uma API interna para centralizar o envio de notificações por outros sistemas. Em vez de cada aplicação implementar sua própria lógica de envio, rastreio, integrações com ferramentas de comunicação, o Dispatcher atua como um serviço único de despacho de mensagens, recebendo requisições de múltiplos sistemas e processando-as de forma assíncrona.
 
 A ideia central do projeto é separar a origem da notificação do mecanismo de entrega. Um sistema como "pedidos", "autenticação" ou "contas" pode simplesmente enviar uma solicitação para a API do Dispatcher, e a plataforma se encarrega de persistir a mensagem, enfileirá-la e entregar o conteúdo ao canal correto.
 
@@ -17,7 +17,7 @@ O Dispatcher resolve alguns problemas comuns em sistemas internos:
 - Permite rastrear status de cada notificação
 - Isola cada origem por aplicação e chave de acesso
 - Processa mensagens em fila para evitar bloqueios na API
-- Oferece controle administrativo para gerenciar aplicações, chaves e usuários admin.
+- Oferece controle administrativo para gerenciar aplicações e suas keys.
 
 ## Fluxo principal da aplicação
 
@@ -27,7 +27,7 @@ O fluxo típico funciona assim:
 2. Essa aplicação chama a API do Dispatcher, autenticando-se com uma API key própria.
 3. O Dispatcher valida a chave de acesso, identifica a aplicação que a enviou e registra a notificação no banco.
 4. A notificação entra em um processo assíncrono via BullMQ/Redis.
-5. Um worker consome a fila e executa o envio real do e-mail.
+5. Um worker consome a fila e executa o envio real do e-mail (ou outros canais futuramente).
 6. O provider responsável pelo canal envia a mensagem usando Mailpit em ambiente local ou Resend em produção.
 7. O status da notificação é atualizado para enviado, falho ou cancelado, mantendo histórico de erros e tentativas.
 
@@ -43,7 +43,7 @@ flowchart TD
     H --> I[Provider envia e-mail]
     I --> J{Envio bem-sucedido?}
     J -- Sim --> K[Atualizar status como SENT]
-    J -- Não --> L[Registrars falha e tentar novamente ou marcar FAILED]
+    J -- Não --> L[Registrar falha e tentar novamente ou marcar FAILED]
     K --> M[Histórico de entregas e monitoramento]
     L --> M
 ```
@@ -54,34 +54,34 @@ O sistema possui dois níveis de acesso bem distintos:
 
 ### 1. Autenticação de aplicações externas
 
-- Cada sistema cliente é representado por um registro de Application.
-- Cada aplicação possui uma ou mais API keys.
-- A chave é armazenada em formato seguro: parte do prefixo fica em banco para identificação e o hash completo é usado para validação.
-- A autenticação é feita via header de autorização do tipo Bearer.
-- O guard ApiKeyGuard verifica a chave, valida a aplicação, checa se ela está ativa, se não expirou e se não foi revogada.
+- Cada sistema cliente é representado por um registro de Application
+- Cada aplicação possui uma ou mais API keys
+- A chave é armazenada em formato seguro
+- A autenticação é feita via header de autorização do tipo Bearer
+- O guard ApiKeyGuard verifica a chave, valida a aplicação, checa se ela está ativa, se não expirou e se não foi revogada
 
 Isso permite que diferentes sistemas internos consumam o serviço isolados por aplicação, sem compartilhar credenciais entre si.
 
 ### 2. Autenticação de administradores
 
-- Os administradores possuem usuários em AdminUser.
-- O login é feito em /auth usando email e senha.
-- O JWT é emitido com dados do usuário, como sub, role e status.
-- Os guards AdminAuthGuard e AdminRolesGuard controlam acesso aos endpoints de administração.
-- Há suporte a roles ADMIN e OPERATOR, com permissões diferenciadas para criar, listar e gerenciar aplicações e chaves.
+- Os administradores possuem usuários em AdminUser
+- O login é feito em /auth usando email e senha
+- O JWT é emitido com dados do usuário, como sub, role e status
+- Os guards AdminAuthGuard e AdminRolesGuard controlam acesso aos endpoints de administração
+- Há suporte a roles ADMIN e OPERATOR, com permissões diferenciadas para criar, listar e gerenciar aplicações e chaves
 
 ## Arquitetura do sistema
 
-A arquitetura segue o modelo de módulos do NestJS, com separação clara entre camada web, serviços, infraestrutura e dados.
+A arquitetura segue o modelo de módulos do NestJS, com separação clara camadas.
 
 ### Módulos principais
 
-- AppModule: módulo raiz que registra configuração global, logger, rate limit, Redis/BullMQ, Bull Board e os módulos principais.
-- NotificationsModule: responsável pelo fluxo de notificações, incluindo controller, serviço e worker de fila.
-- ApplicationsModule: gerencia as aplicações clientes do sistema.
-- ApiKeyModule: gerencia as chaves de API vinculadas a cada aplicação.
-- AdminUserModule: gerencia usuários administradores.
-- AdminAuthModule: autenticação e emissão de JWT para administração.
+- AppModule: módulo raiz que registra configuração global, logger, rate limit, Redis/BullMQ, Bull Board e os módulos principais
+- NotificationsModule: responsável pelo fluxo de notificações, incluindo controller, serviço e worker de fila
+- ApplicationsModule: gerencia as aplicações clientes do sistema
+- ApiKeyModule: gerencia as chaves de API vinculadas a cada aplicação
+- AdminUserModule: gerencia usuários administradores
+- AdminAuthModule: autenticação e emissão de JWT para administração
 
 ### Camada de apresentação
 
@@ -90,7 +90,7 @@ Os controllers expõem endpoints REST para:
 - autenticação administrativa
 - cadastro e gestão de aplicações
 - criação e gerenciamento de API keys
-- envio de notificações.
+- envio e consulta de notificações
 
 Os controles de acesso fazem parte da camada de segurança e são aplicados com decorators e guards.
 
@@ -98,24 +98,24 @@ Os controles de acesso fazem parte da camada de segurança e são aplicados com 
 
 Os services encapsulam a lógica de negócio:
 
-- ApplicationsService: CRUD de aplicações.
-- ApiKeyService: geração, validação, revogação e atualização de chaves.
-- NotificationsService: orquestra a criação e processamento das notificações.
-- AdminAuthService: valida admin e gera token JWT.
+- ApplicationsService: CRUD de aplicações
+- ApiKeyService: geração, validação, revogação e atualização de chaves
+- NotificationsService: orquestra a criação e processamento das notificações
+- AdminAuthService: valida admin e gera token JWT
 
 ### Camada de infraestrutura
 
 A infraestrutura concentra a integração com tecnologias externas:
 
-- PrismaService: acesso ao banco de dados.
-- DatabaseModule: disponibiliza a conexão do Prisma.
-- BullMQ: fila de processamento assíncrono.
-- Redis: broker da fila.
-- EmailProvider: abstração para provedores de e-mail.
-- MailpitEmailProvider: provedor local para desenvolvimento.
-- ResendEmailProvider: provedor de produção.
-- Bull Board: painel visual da fila.
-- Pino Logger: logging estruturado.
+- PrismaService: acesso ao banco de dados
+- DatabaseModule: disponibiliza a conexão do Prisma
+- BullMQ: fila de processamento assíncrono
+- Redis: broker da fila
+- EmailProvider: abstração para provedores de e-mail
+- MailpitEmailProvider: provedor local para desenvolvimento
+- ResendEmailProvider: provedor de produção
+- Bull Board: painel visual da fila
+- Pino Logger: logging estruturado
 
 ### Templates customizados
 
@@ -146,6 +146,8 @@ O projeto usa Prisma com PostgreSQL e o schema define as entidades principais:
 
 Além disso, o schema já contempla enums para canais (
 EMAIL, PUSH, WHATSAPP), status (PENDING, PROCESSING, SENT, FAILED, CANCELED) e templates pré-definidos.
+
+Como possível melhoria, a camada de persistência poderia adotar o padrão Repository. Atualmente, os serviços acessam o Prisma diretamente; uma camada de repositórios poderia encapsular as operações de banco e reduzir o acoplamento entre as regras de negócio e a tecnologia de persistência.
 
 ## Estrutura funcional da arquitetura
 

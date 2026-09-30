@@ -62,7 +62,7 @@ Inclui:
 
 #### 4. Camada de persistência
 
-A camada de dados fica em PostgreSQL e é acessada via Prisma.
+A camada de dados fica em PostgreSQL e é acessada via Prisma. Uma melhoria será criar uma camada de repository.
 
 Ela guarda:
 

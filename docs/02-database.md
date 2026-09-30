@@ -90,7 +90,7 @@ enum AdminRole {
 Representa os papéis administrativos do sistema.
 
 - ADMIN: tem autonomia total para criar e alterar aplicações, chaves e perfis administrativos.
-- OPERATOR: acessa áreas de operação e consulta, mas normalmente não realiza ações sensíveis de administração.
+- OPERATOR: acessa áreas de operação e consulta, mas não realiza ações sensíveis de administração.
 
 Esses papéis são usados pelos guards de autorização no NestJS e controlam os endpoints de administração.
 
@@ -239,7 +239,7 @@ Essa é uma das entidades centrais para a segurança da aplicação.
 #### Regras e objetivos
 
 - cada aplicação pode ter várias chaves
-- a `keyHash` armazena o hash completo da chave nunca deve ser exposta
+- a `keyHash` armazena o hash da chave
 - a `keyPrefix` identifica a chave de forma segura e é usada para busca inicial
 - `lastUsedAt` permite rastrear uso recente
 - `revokedAt` permite revogar a chave sem excluir o registro
@@ -443,20 +443,8 @@ O projeto já possui migrações em [prisma/migrations](../prisma/migrations), c
 
 Isso mostra que o esquema evoluiu com o tempo e que a base foi ajustada para suportar requisitos novos, especialmente em segurança e identidade de chaves.
 
-## Observações de design
-
-O banco está bem alinhado com o objetivo do produto, principalmente por:
-
-- separar clientes externos (`Application`) de usuários administrativos (`AdminUser`)
-- isolar autenticação de aplicação em `ApiKey`
-- manter rastreabilidade de notificações em `Notification`
-- usar `Json` para flexibilidade de templates
-- suportar processamento assíncrono sem bloquear a API principal.
-
-A principal característica de projeto é que a base de dados não apenas registra dados, mas também funciona como fonte de verdade para autenticação, rastreio e observabilidade da entrega das mensagens.
-
 ## Conclusão
 
 O schema da aplicação é simples, mas bem pensado para o contexto de um serviço de notificações interno. Ele separa responsabilidades por entidade, aplica segurança de autenticação e oferece acompanhamento completo do ciclo de vida das mensagens.
 
-A modelagem atual é adequada para um MVP produtivo e para um ambiente de operação interna, com espaço para evoluções futuras como gestão de templates e customizações mais avançadas por cliente.
+A modelagem atual é adequada para um MVP e para um ambiente de operação interna, com espaço para evoluções futuras como gestão de templates, customizações mais avançadas por cliente e outras funcionalidades.
