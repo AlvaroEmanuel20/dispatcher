@@ -1,0 +1,10 @@
+# Próximos passos
+
+## Trabalhando agora
+
+Trabalhando em: Implementar envio de notificações email - Issue [#1](https://github.com/AlvaroEmanuel20/dispatcher/issues/1)
+Ponto de parada: Criar service integrando com serviço de enviar email
+
+## Depois
+
+- Criar processor e controller

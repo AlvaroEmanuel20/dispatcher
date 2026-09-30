@@ -54,3 +54,54 @@ Foi pensado para uso interno, provendo a outros sistemas o serviço de envio de 
 - Throttler (Rate limit)
 
 ## Como executar localmente
+
+### Instalação
+
+```bash
+npm install
+```
+
+### Configuração do .env
+
+Copie o arquivo de exemplo e preencha os valores necessários:
+
+```bash
+cp .env.example .env
+```
+
+### Docker
+
+O projeto inclui um ambiente local com PostgreSQL, Redis e Mailpit:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### Banco de dados
+
+Após subir os containers, aplique as migrações do Prisma:
+
+```bash
+npx prisma migrate deploy
+npx prisma generate
+```
+
+### Redis
+
+O Redis é utilizado pelas filas BullMQ para processamento assíncrono de sincronização de processos e envio de e-mails. A configuração padrão usa localhost:6379.
+
+### Prisma
+
+Para visualizar ou gerenciar o schema e o client do Prisma:
+
+```bash
+npx prisma studio
+```
+
+### Execução da aplicação
+
+Em modo desenvolvimento:
+
+```bash
+npm run start:dev
+```
