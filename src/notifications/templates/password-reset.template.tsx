@@ -13,6 +13,7 @@ import {
 import { TemplateReturn } from './template.resolver';
 
 export type PasswordResetVariables = {
+  applicationName: string;
   name: string;
   url: string;
 };
@@ -23,13 +24,17 @@ export async function getPasswordResetTemplate(
   const html = await render(<PasswordResetTemplate {...variables} />);
 
   return {
-    subject: 'Redefina sua senha no Jusmetrica',
+    subject: `Redefina sua senha no ${variables.applicationName}`,
     html,
     text: toPlainText(html),
   };
 }
 
-function PasswordResetTemplate({ name, url }: PasswordResetVariables) {
+function PasswordResetTemplate({
+  name,
+  url,
+  applicationName,
+}: PasswordResetVariables) {
   return (
     <Html lang="pt-BR">
       <Head />
@@ -52,7 +57,7 @@ function PasswordResetTemplate({ name, url }: PasswordResetVariables) {
 
             <Text>Se você não solicitou essa ação, ignore este e-mail.</Text>
 
-            <Text>Atenciosamente, Equipe Jusmetrica</Text>
+            <Text>Atenciosamente, Equipe {applicationName}</Text>
           </Section>
         </Container>
       </Body>

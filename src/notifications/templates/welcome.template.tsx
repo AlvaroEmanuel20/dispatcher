@@ -13,6 +13,7 @@ import {
 import { TemplateReturn } from './template.resolver';
 
 export type WelcomeVariables = {
+  applicationName: string;
   name: string;
   url: string;
 };
@@ -23,18 +24,18 @@ export async function getWelcomeTemplate(
   const html = await render(<WelcomeTemplate {...variables} />);
 
   return {
-    subject: 'Boas-vindas à Jusmetrica',
+    subject: `Boas-vindas ao ${variables.applicationName}`,
     html,
     text: toPlainText(html),
   };
 }
 
-function WelcomeTemplate({ name, url }: WelcomeVariables) {
+function WelcomeTemplate({ name, url, applicationName }: WelcomeVariables) {
   return (
     <Html lang="pt-BR">
       <Head />
 
-      <Preview>Boas-vindas à Jusmetrica</Preview>
+      <Preview>Boas-vindas ao {applicationName}</Preview>
 
       <Body>
         <Container>
@@ -45,13 +46,13 @@ function WelcomeTemplate({ name, url }: WelcomeVariables) {
               Que bom ter você com a gente. Sua conta está pronta para começar.
             </Text>
 
-            <Text>Acesse a Jusmetrica pelo link abaixo:</Text>
+            <Text>Acesse a {applicationName} pelo link abaixo:</Text>
 
             <Button href={url}>Acessar minha conta</Button>
 
             <Text>Esperamos que sua experiência seja ótima.</Text>
 
-            <Text>Atenciosamente, Equipe Jusmetrica</Text>
+            <Text>Atenciosamente, Equipe {applicationName}</Text>
           </Section>
         </Container>
       </Body>

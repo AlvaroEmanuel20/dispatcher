@@ -13,6 +13,7 @@ import {
 import { TemplateReturn } from './template.resolver';
 
 export type EmailVerificationVariables = {
+  applicationName: string;
   name: string;
   url: string;
 };
@@ -23,13 +24,17 @@ export async function getEmailVerificationTemplate(
   const html = await render(<EmailVerificationTemplate {...variables} />);
 
   return {
-    subject: 'Confirme seu cadastro no Jusmetrica',
+    subject: `Confirme seu cadastro no ${variables.applicationName}`,
     html,
     text: toPlainText(html),
   };
 }
 
-function EmailVerificationTemplate({ name, url }: EmailVerificationVariables) {
+function EmailVerificationTemplate({
+  name,
+  url,
+  applicationName,
+}: EmailVerificationVariables) {
   return (
     <Html lang="pt-BR">
       <Head />
@@ -47,7 +52,7 @@ function EmailVerificationTemplate({ name, url }: EmailVerificationVariables) {
 
             <Text>Este link expira em 30 minutos.</Text>
 
-            <Text>Atenciosamente, Equipe Jusmetrica</Text>
+            <Text>Atenciosamente, Equipe {applicationName}</Text>
           </Section>
         </Container>
       </Body>
